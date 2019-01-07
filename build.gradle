@@ -1,20 +1,21 @@
 
 buildscript {
-    ext.cubaVersion = '6.5.1'
+    ext.cubaVersion = '6.10.6'
     repositories {
         maven {
-            url 'http://repository.haulmont.com:8587/nexus/content/groups/work'
-            credentials {
-                username(rootProject.hasProperty('repoUser') ? rootProject['repoUser'] : 'external')
-                password(rootProject.hasProperty('repoPass') ? rootProject['repoPass'] : 'aiva33n8')
-            }
+            url 'https://dl.bintray.com/cuba-platform/main'
         }
         maven {
-            url 'https://repo.cuba-platform.com/content/groups/premium'
+            url 'https://cuba-platform.bintray.com/premium'
             credentials {
                 username(rootProject.hasProperty('premiumRepoUser') ? rootProject['premiumRepoUser'] : System.getenv('CUBA_PREMIUM_USER'))
                 password(rootProject.hasProperty('premiumRepoPass') ? rootProject['premiumRepoPass'] : System.getenv('CUBA_PREMIUM_PASSWORD'))
             }
+        }
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'http://maven.vaadin.com/vaadin-addons'
         }
         
         
@@ -30,7 +31,7 @@ def coreModule = project(':app-core')
 def guiModule = project(':app-gui')
 def webModule = project(':app-web')
 
-def servletApi = 'org.apache.tomcat:tomcat-servlet-api:8.0.26'
+def servletApi = 'javax.servlet:javax.servlet-api:3.1.0'
 
 
 apply(plugin: 'idea')
@@ -76,7 +77,9 @@ configure([globalModule, coreModule, guiModule, webModule]) {
 }
 
 configure(globalModule) {
-    task enhance(type: CubaEnhancing)
+    entitiesEnhancing {
+        main { enabled = true }
+    }
 
     
 }
@@ -213,7 +216,7 @@ task restart(dependsOn: ['stop', ':app-core:deploy', ':app-web:deploy'], descrip
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.1'
+    gradleVersion = '4.3.1'
 }
 
 apply from: 'extra.gradle'
